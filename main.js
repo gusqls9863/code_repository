@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 로또 번호 생성 관련
+    // === 로또 번호 생성 관련 ===
     const winningNumbersContainer = document.getElementById('winning-numbers');
     const bonusNumberContainer = document.getElementById('bonus-number');
     const generateBtn = document.getElementById('generate-btn');
@@ -46,8 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
     generateBtn.addEventListener('click', displayNumbers);
     displayNumbers();
 
-    // Teachable Machine AI 분류기 관련
-    const URL = "https://teachablemachine.withgoogle.com/models/X5Lfk_5Rs6/";
+    // === Teachable Machine AI 분류기 관련 ===
+    const MODEL_URL = "https://teachablemachine.withgoogle.com/models/X5Lfk_5Rs6/";
     let model, maxPredictions;
 
     const imageUpload = document.getElementById('image-upload');
@@ -57,17 +57,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const labelContainer = document.getElementById('label-container');
     const loadingSpinner = document.getElementById('loading-spinner');
 
+    // 모델 미리 로드 (성능 및 구동 안정성 향상)
     async function initModel() {
         if (model) return;
-        loadingSpinner.style.display = 'block';
-        const modelURL = URL + "model.json";
-        const metadataURL = URL + "metadata.json";
-        model = await tmImage.load(modelURL, metadataURL);
-        maxPredictions = model.getTotalClasses();
-        loadingSpinner.style.display = 'none';
+        try {
+            loadingSpinner.style.display = 'block';
+            loadingSpinner.innerText = 'AI 모델 불러오는 중...';
+            const modelURL = MODEL_URL + "model.json";
+            const metadataURL = MODEL_URL + "metadata.json";
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+            loadingSpinner.style.display = 'none';
+            console.log("Model loaded successfully");
+        } catch (error) {
+            console.error("Model load failed:", error);
+            loadingSpinner.innerText = '모델 로드 실패. URL을 확인해주세요.';
+        }
     }
 
-    uploadBtn.addEventListener('click', () => imageUpload.click());
+    uploadBtn.addEventListener('click', () => {
+        imageUpload.click();
+    });
 
     imageUpload.addEventListener('change', async (e) => {
         const file = e.target.files[0];
@@ -75,35 +85,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const reader = new FileReader();
         reader.onload = async (event) => {
+            // 이미지 소스 설정
             previewImage.src = event.target.result;
             previewImage.style.display = 'block';
-            await initModel();
-            predict();
+            
+            // 이미지가 완전히 로드된 후 예측 수행
+            previewImage.onload = async () => {
+                await initModel();
+                if (model) {
+                    predict();
+                }
+            };
         };
         reader.readAsDataURL(file);
     });
 
     async function predict() {
-        const prediction = await model.predict(previewImage);
+        if (!model) return;
         
-        // 가장 높은 확률의 클래스 찾기
-        let highestProb = 0;
-        let bestClass = "";
-        
-        labelContainer.innerHTML = "";
-        for (let i = 0; i < maxPredictions; i++) {
-            const classPrediction = prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(2) + "%";
-            const div = document.createElement("div");
-            div.innerHTML = classPrediction;
-            labelContainer.appendChild(div);
+        resultLabel.innerHTML = "판별 중...";
+        try {
+            const prediction = await model.predict(previewImage);
+            
+            let highestProb = 0;
+            let bestClass = "";
+            
+            labelContainer.innerHTML = "";
+            prediction.forEach(p => {
+                const classPrediction = `${p.className}: ${(p.probability * 100).toFixed(2)}%`;
+                const div = document.createElement("div");
+                div.innerHTML = classPrediction;
+                labelContainer.appendChild(div);
 
-            if (prediction[i].probability > highestProb) {
-                highestProb = prediction[i].probability;
-                bestClass = prediction[i].className;
-            }
+                if (p.probability > highestProb) {
+                    highestProb = p.probability;
+                    bestClass = p.className;
+                }
+            });
+            
+            const resultEmoji = bestClass === "강아지" ? "🐶" : (bestClass === "고양이" ? "🐱" : "✨");
+            resultLabel.innerHTML = `<h3>결과: ${resultEmoji} ${bestClass}일 확률이 ${(highestProb * 100).toFixed(1)}%입니다!</h3>`;
+        } catch (error) {
+            console.error("Prediction failed:", error);
+            resultLabel.innerHTML = "판별 오류가 발생했습니다.";
         }
-        
-        const resultEmoji = bestClass === "강아지" ? "🐶" : (bestClass === "고양이" ? "🐱" : "❓");
-        resultLabel.innerHTML = `<h3>결과: ${resultEmoji} ${bestClass}일 확률이 높습니다!</h3>`;
     }
+    
+    // 페이지 로드 시 모델 미리 로드 시작
+    initModel();
 });
