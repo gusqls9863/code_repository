@@ -77,9 +77,50 @@ h1 {
     transform: translateY(-2px);
 }
 
-#generate-btn:active {
-    transform: translateY(1px);
-    background-color: #0a58ca;
+/* AI 분류기 섹션 스타일 */
+.ai-section {
+    margin: 30px 0;
+}
+
+.upload-container {
+    margin-bottom: 20px;
+}
+
+#upload-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1.1em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#upload-btn:hover {
+    background-color: #218838;
+}
+
+#image-preview-container {
+    margin: 20px auto;
+    max-width: 300px;
+}
+
+#preview-image {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+#result-label {
+    margin: 20px 0;
+    color: #6a11cb;
+}
+
+#label-container div {
+    font-size: 0.9em;
+    color: #666;
+    margin: 5px 0;
 }
 
 /* 섹션 공통 스타일 */
@@ -93,7 +134,7 @@ h1 {
     text-align: left;
 }
 
-.contact-section h2, .comments-section h2 {
+.contact-section h2, .comments-section h2, .ai-section h2 {
     text-align: center;
     color: #333;
     margin-bottom: 25px;
@@ -147,7 +188,6 @@ h1 {
     background-color: #555;
 }
 
-/* Disqus 스타일 조정 */
 #disqus_thread {
     margin-top: 20px;
 }
@@ -156,19 +196,7 @@ h1 {
     .container {
         padding: 20px;
     }
-
-    h1 {
-        font-size: 1.8em;
-    }
-    
-    .ball {
-        width: 45px;
-        height: 45px;
-        font-size: 1.4em;
-    }
-    
-    .lotto-numbers {
-        flex-direction: column;
-        gap: 20px;
-    }
+    h1 { font-size: 1.8em; }
+    .ball { width: 45px; height: 45px; font-size: 1.4em; }
+    .lotto-numbers { flex-direction: column; gap: 20px; }
 }
