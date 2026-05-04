@@ -8,7 +8,7 @@ body {
     min-height: 100vh;
     margin: 0;
     background-image: linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%);
-    padding: 20px 0;
+    padding: 40px 0;
 }
 
 .container {
@@ -19,6 +19,7 @@ body {
     text-align: center;
     width: 90%;
     max-width: 600px;
+    margin-bottom: 40px;
 }
 
 h1 {
@@ -81,23 +82,24 @@ h1 {
     background-color: #0a58ca;
 }
 
-/* 제휴 문의 폼 스타일 */
+/* 섹션 공통 스타일 */
 .divider {
     margin: 40px 0;
     border: 0;
     border-top: 1px solid #eee;
 }
 
-.contact-section {
+.contact-section, .comments-section {
     text-align: left;
 }
 
-.contact-section h2 {
+.contact-section h2, .comments-section h2 {
     text-align: center;
     color: #333;
     margin-bottom: 25px;
 }
 
+/* 제휴 문의 폼 스타일 */
 .input-group {
     margin-bottom: 20px;
 }
@@ -143,6 +145,11 @@ h1 {
 
 #submit-btn:hover {
     background-color: #555;
+}
+
+/* Disqus 스타일 조정 */
+#disqus_thread {
+    margin-top: 20px;
 }
 
 @media (max-width: 480px) {
